@@ -8,7 +8,7 @@ function getDBConnection() {
     }
 
     $host = "localhost";
-    $dbname = "hotelouvre";
+    $dbname = "appointmentfinder";
     $username = "root";
     $password = "";
 
