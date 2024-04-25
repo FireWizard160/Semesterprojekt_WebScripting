@@ -8,26 +8,23 @@ class DataHandler
 {
     public function queryData()
     {
-        $res =  $this->getData();
+        $res = $this->getData();
         return $res;
     }
-
-
-    private static function getData()
+    public function getData()
     {
-
         $db = getDBConnection();
+        // Datenstruktur initialisieren
         $data = array();
+
+        // Abfrage für Appointments durchführen
         $sql = "SELECT * FROM appointments";
         $result = $db->query($sql);
 
-        // Wenn Termine gefunden wurden
+        // Wenn Appointments gefunden wurden
         if ($result->num_rows > 0) {
-            // Schleife durch alle gefundenen Termine
-
-
+            // Schleife durch alle gefundenen Appointments
             while ($row = $result->fetch_assoc()) {
-
                 $appointmentID = $row["appointmentID"];
                 $title = $row["title"];
                 $location = $row["location"];
@@ -35,87 +32,71 @@ class DataHandler
                 $expirydate = $row["expirydate"];
 
 
+                // Timeslots für dieses Appointment abrufen
+                $timeslots = array();
+                $sql_timeslots = "SELECT * FROM timeslots WHERE appointmentID = $appointmentID";
+                $result_timeslots = $db->query($sql_timeslots);
 
-                $appointments[$appointmentID] = new Appointment($appointmentID, $title, $location, $date, $expirydate);
+                if ($result_timeslots->num_rows > 0) {
 
+                    // Schleife durch alle gefundenen Timeslots für dieses Appointment
+                    while ($timeslot = $result_timeslots->fetch_assoc()) {
+                        $timeslotID = $timeslot["timeslotID"];
+                        $starttime = $timeslot["starttime"];
+                        $endtime = $timeslot["endtime"];
 
-            }
-        }
+                        // VotedTimeslots für diesen Timeslot abrufen
+                        $votedTimeslots = array();
+                        $sql_voted_timeslots = "SELECT * FROM votedtimeslots WHERE timeslotID = $timeslotID";
+                        $result_voted_timeslots = $db->query($sql_voted_timeslots);
 
-            $sql = "SELECT * FROM timeslots";
-            $result = $db->query($sql);
+                        if ($result_voted_timeslots->num_rows > 0) {
 
-            // Wenn Termine gefunden wurden
-            if ($result->num_rows > 0) {
-                // Schleife durch alle gefundenen Termine
+                            // Schleife durch alle gefundenen VotedTimeslots für diesen Timeslot
+                            while ($votedTimeslot = $result_voted_timeslots->fetch_assoc()) {
+                                $votingID = $votedTimeslot["votingID"];
+                                $username = $votedTimeslot["username"];
+                                $comment = $votedTimeslot["comment"];
+                                // VotedTimeslot-Objekt erstellen und zum Array hinzufügen
+                                $votedTimeslots[] = new VotedTimeSlot($votingID, $appointmentID, $timeslotID, $username,$comment);
+                            }
+                        }
 
-
-                while ($row = $result->fetch_assoc()) {
-
-                    $appointmentID = $row["appointmentID"];
-                    $timeslotID = $row["timeslotID"];
-                    $date = $row["date"];
-                    $starttime = $row["starttime"];
-                    $endtime = $row["endtime"];
-
-
-                    $timeslots[$timeslotID] = new Timeslot($appointmentID, $timeslotID, $date, $starttime, $endtime);
-
-
-                }
-            }
-
-                $sql = "SELECT * FROM votedtimeslots";
-                $result = $db->query($sql);
-
-                // Wenn Termine gefunden wurden
-                if ($result->num_rows > 0) {
-                    // Schleife durch alle gefundenen Termine
-
-                    while ($row = $result->fetch_assoc()) {
-
-                        $votingID = $row["votingID"];
-                        $appointmentID = $row["appointmentID"];
-                        $timeslotID = $row["timeslotID"];
-                        $username = $row["username"];
-                        $comment = $row["comment"];
-
-
-                        $votedtimeslots[$votingID] = new VotedTimeSlot($votingID, $appointmentID, $timeslotID, $username, $comment);
-
+                        // Timeslot-Objekt erstellen und VotedTimeslots hinzufügen
+                        $timeslots[$timeslotID] = new Timeslot($timeslotID, $appointmentID, $date, $starttime, $endtime);
+                        $timeslots[$timeslotID]->votedtimeslots = $votedTimeslots;
                     }
-
                 }
 
-        // Verschachteln der Arrays
-        foreach ($timeslots as $timeslot) {
-            $appointmentID = $timeslot->appointmentID;
-            if (isset($appointments[$appointmentID])) {
-                $appointments[$appointmentID]->addTimeslot($timeslot);
+                // Appointment-Objekt erstellen und Timeslots hinzufügen
+                $appointment = new Appointment($appointmentID, $title, $location, $date, $expirydate);
+                $appointment->timeslots = $timeslots;
+
+                // Appointment zum Data-Array hinzufügen
+                $data[$appointmentID] = $appointment;
             }
         }
-
-        foreach ($votedtimeslots as $votedtimeslot) {
-            $timeslotID = $votedtimeslot->timeslotID;
-            if (isset($timeslots[$timeslotID])) {
-                $timeslots[$timeslotID]->addVotedTimeslot($votedtimeslot);
-            }
-        }
-
-        $data['appointments'] = $appointments;
-
 
         return $data;
     }
+
+
+
     public function printData()
-    {
+         {
         $data = $this->queryData();
         echo "<pre>";
         print_r($data);
         echo "</pre>";
-    }
-}
+        }
 
+
+
+
+
+
+
+}
 $dataHandler = new DataHandler();
 
 // Aufruf der printData()-Methode, um die Daten zu drucken
