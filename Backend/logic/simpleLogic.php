@@ -18,6 +18,9 @@ class SimpleLogic
             case "insertVote":
                 $res = $this->dh->queryNewVote($param);
                 break;
+            case "insertAppointment":
+                $res = $this->dh->queryNewAppointment($param);
+                break;
             default:
                 $res = null;
                 break;

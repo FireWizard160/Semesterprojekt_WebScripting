@@ -1,7 +1,7 @@
 <?php
-include("models/appointment.php");
-include("models/timeslot.php");
-include("models/votedTimeslot.php");
+include("../models/appointment.php");
+include("../models/timeslot.php");
+include("../models/votedTimeslot.php");
 include("db_connect.php");
 
 class DataHandler
@@ -18,6 +18,11 @@ class DataHandler
         return $res;
     }
 
+    public function queryNewAppointment($newAppointment)
+    {
+        $res = $this->insertAppointment($newAppointment);
+        return $res;
+    }
 
     public function getData()
     {
@@ -50,6 +55,7 @@ class DataHandler
                     // Iteriere durch alle gefundenen Timeslots für dieses Appointment
                     while ($timeslot = $result_timeslots->fetch_assoc()) {
                         $timeslotID = $timeslot["timeslotID"];
+                        $date = $timeslot ["date"];
                         $starttime = $timeslot["starttime"];
                         $endtime = $timeslot["endtime"];
 
@@ -122,8 +128,33 @@ class DataHandler
         }
     }
 
+    public function insertAppointment($newAppointment)
+    {
+        $db = getDBConnection();
+        // Extrahiere die Werte des neuen Votes aus dem Array
+        $title = $newAppointment[0];
+        $location = $newAppointment[1];
+        $date = $newAppointment[2];
+        $expirydate = $newAppointment[3];
+
+        // SQL-Abfrage zum Einfügen eines neuen Votes
+        $sql = "INSERT INTO appointments (title, location, date, expirydate)
+            VALUES ('$title', '$location', '$date', '$expirydate')";
+
+        // Führe die SQL-Abfrage aus
+        if ($db->query($sql) === TRUE) {
+            echo "Neuer Vote erfolgreich eingefügt.";
+        } else {
+            echo "Fehler beim Einfügen eines neuen Votes: " . $db->error;
+        }
+    }
 
 
 
 }
+/*$dataHandler = new DataHandler();
+
+// Aufruf der printData()-Methode, um die Daten zu drucken
+$dataHandler->printData();
+*/
 ?>

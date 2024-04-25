@@ -99,4 +99,5 @@ function createAppointmentElement(appointmentData: any) {
     appointmentElement.append(cardContainer)
 
     return $(`<div class="accordion" id="appointmentContainer${appointmentData.appointmentID}">`).append(appointmentElement);
+
 }
