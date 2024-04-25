@@ -15,6 +15,10 @@ class SimpleLogic
             case "getAllData":
                 $res = $this->dh->queryData();
                 break;
+            case "insertVote":
+                $res = $this->dh->queryNewVote($param);
+                break;
+            default:
                 $res = null;
                 break;
         }
