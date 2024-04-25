@@ -11,6 +11,14 @@ class DataHandler
         $res = $this->getData();
         return $res;
     }
+
+    public function queryNewVote($newVote)
+    {
+        $res = $this->insertVote($newVote);
+        return $res;
+    }
+
+
     public function getData()
     {
         $db = getDBConnection();
@@ -23,7 +31,7 @@ class DataHandler
 
         // Wenn Appointments gefunden wurden
         if ($result->num_rows > 0) {
-            // Schleife durch alle gefundenen Appointments
+            // Iteriere durch alle gefundenen Appointments
             while ($row = $result->fetch_assoc()) {
                 $appointmentID = $row["appointmentID"];
                 $title = $row["title"];
@@ -39,7 +47,7 @@ class DataHandler
 
                 if ($result_timeslots->num_rows > 0) {
 
-                    // Schleife durch alle gefundenen Timeslots für dieses Appointment
+                    // Iteriere durch alle gefundenen Timeslots für dieses Appointment
                     while ($timeslot = $result_timeslots->fetch_assoc()) {
                         $timeslotID = $timeslot["timeslotID"];
                         $starttime = $timeslot["starttime"];
@@ -52,7 +60,7 @@ class DataHandler
 
                         if ($result_voted_timeslots->num_rows > 0) {
 
-                            // Schleife durch alle gefundenen VotedTimeslots für diesen Timeslot
+                            // Iteriere durch alle gefundenen VotedTimeslots für diesen Timeslot
                             while ($votedTimeslot = $result_voted_timeslots->fetch_assoc()) {
                                 $votingID = $votedTimeslot["votingID"];
                                 $username = $votedTimeslot["username"];
@@ -93,17 +101,29 @@ class DataHandler
 
 
 
-    public function insertAppointment($newAppointment)
+    public function insertVote($newVote)
     {
+        $db = getDBConnection();
+        // Extrahiere die Werte des neuen Votes aus dem Array
+        $appointmentID = $newVote[0];
+        $timeslotID = $newVote[1];
+        $username = $newVote[2];
+        $comment = $newVote[3];
 
+        // SQL-Abfrage zum Einfügen eines neuen Votes
+        $sql = "INSERT INTO votedtimeslots (appointmentID, timeslotID, username, comment)
+            VALUES ('$appointmentID', '$timeslotID', '$username', '$comment')";
+
+        // Führe die SQL-Abfrage aus
+        if ($db->query($sql) === TRUE) {
+            echo "Neuer Vote erfolgreich eingefügt.";
+        } else {
+            echo "Fehler beim Einfügen eines neuen Votes: " . $db->error;
+        }
     }
 
 
 
 
 }
-$dataHandler = new DataHandler();
-
-// Aufruf der printData()-Methode, um die Daten zu drucken
-$dataHandler->printData();
 ?>
