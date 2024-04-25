@@ -16,7 +16,7 @@ class Appointment
     public $timeslots = array();
 
 
-    function __construct($appointmentID, $title, $location, $date, $expirydate, $comment, $timeslots = '')
+    function __construct($appointmentID, $title, $location, $date, $expirydate, $timeslots = '')
     {
 
         $this->appointmentID = $appointmentID;
@@ -24,7 +24,6 @@ class Appointment
         $this->location = $location;
         $this->date = $date;
         $this->expirydate = $expirydate;
-
         $this->timeslots[] = $timeslots;
     }
 
