@@ -1,7 +1,7 @@
 <?php
-include("../models/appointment.php");
-include("../models/timeslot.php");
-include("../models/votedTimeslot.php");
+include("models/appointment.php");
+include("models/timeslot.php");
+include("models/votedTimeslot.php");
 include("db_connect.php");
 
 class DataHandler
