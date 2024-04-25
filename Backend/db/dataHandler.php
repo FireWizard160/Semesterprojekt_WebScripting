@@ -93,6 +93,11 @@ class DataHandler
 
 
 
+    public function insertAppointment($newAppointment)
+    {
+
+    }
+
 
 
 
