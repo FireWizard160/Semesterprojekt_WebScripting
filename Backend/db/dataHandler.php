@@ -1,8 +1,8 @@
 <?php
-include("../models/appointment.php");
-include("../models/timeslot.php");
-include("../models/votedTimeslot.php");
-include("../db/db_connect.php");
+include("models/appointment.php");
+include("models/timeslot.php");
+include("models/votedTimeslot.php");
+include("db_connect.php");
 
 class DataHandler
 {
@@ -102,8 +102,4 @@ class DataHandler
 
 
 }
-$dataHandler = new DataHandler();
-
-// Aufruf der printData()-Methode, um die Daten zu drucken
-$dataHandler->printData();
 ?>
