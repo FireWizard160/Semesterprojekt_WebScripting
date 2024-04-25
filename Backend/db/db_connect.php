@@ -26,3 +26,4 @@ function getDBConnection() {
 
     return $db;
 }
+
